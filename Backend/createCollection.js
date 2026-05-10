@@ -1,0 +1,1 @@
+import "./src/createCollection.js";
