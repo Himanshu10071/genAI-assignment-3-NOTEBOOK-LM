@@ -1,19 +1,22 @@
-import { getOpenRouterClient, getOpenRouterModel } from "../config/llm.js";
+import { getOpenRouterClient, getOpenRouterModels } from "../config/llm.js";
 
 export async function generateAnswer(question, chunks, requestedModel) {
   const openrouter = getOpenRouterClient();
-  const model = getOpenRouterModel(requestedModel);
+  const models = getOpenRouterModels(requestedModel);
   
   const context = chunks && chunks.length > 0 
     ? chunks.map((chunk) => chunk.pageContent).join("\n\n")
     : "No document context available.";
 
-  const response = await openrouter.chat.completions.create({
-    model,
-    messages: [
-      {
-        role: "system",
-        content: `You are NOTEBOOK LM, a professional AI research assistant inspired by NotebookLM. 
+  let lastError;
+  for (const model of models) {
+    try {
+      const response = await openrouter.chat.completions.create({
+        model,
+        messages: [
+          {
+            role: "system",
+            content: `You are NOTEBOOK LM, a professional AI research assistant inspired by NotebookLM. 
         Your goal is to provide accurate, grounded answers based ONLY on the provided context.
 
         RULES:
@@ -26,12 +29,28 @@ export async function generateAnswer(question, chunks, requestedModel) {
 
         Context:
         ${context}`,
-      },
-      { role: "user", content: question },
-    ],
-  });
+          },
+          { role: "user", content: question },
+        ],
+      });
 
-  const answer = response.choices[0].message.content;
-  console.log(`[LLM Response] Answer generated (${answer.length} chars)`);
-  return answer;
+      const answer = response?.choices?.[0]?.message?.content;
+      if (!answer) {
+        throw new Error("Empty response from OpenRouter");
+      }
+
+      console.log(`[LLM Response] Answer generated (${answer.length} chars) using ${model}`);
+      return answer;
+    } catch (error) {
+      lastError = error;
+      const message = error?.message || String(error);
+      console.warn(`[LLM Warning] Model ${model} failed: ${message}`);
+    }
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  throw new Error("All OpenRouter models failed");
 }
