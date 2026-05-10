@@ -10,20 +10,40 @@ const SUGGESTIONS = [
 export default function ChatPanel({ doc, messages, onSend, onRetry, isAsking }) {
   const [input, setInput] = useState('')
   const bottomRef = useRef(null)
+  const textareaRef = useRef(null)
+
+  const resizeTextarea = (element = textareaRef.current) => {
+    if (!element) return
+    element.style.height = 'auto'
+    const nextHeight = Math.min(element.scrollHeight, 200)
+    element.style.height = `${nextHeight}px`
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isAsking])
+
+  useEffect(() => {
+    resizeTextarea()
+  }, [input])
 
   const submit = () => {
     const q = input.trim()
     if (!q || isAsking || !doc) return
     onSend(q)
     setInput('')
+    requestAnimationFrame(() => resizeTextarea())
   }
 
   const onKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit() }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      submit()
+      return
+    }
+    if (e.key === 'Enter' && e.shiftKey) {
+      requestAnimationFrame(() => resizeTextarea(e.currentTarget))
+    }
   }
 
   return (
@@ -100,9 +120,11 @@ export default function ChatPanel({ doc, messages, onSend, onRetry, isAsking }) 
             </svg>
           </div>
           <textarea
+            ref={textareaRef}
             className="chat-textarea"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onInput={(e) => resizeTextarea(e.currentTarget)}
             onKeyDown={onKeyDown}
             placeholder={doc ? `Ask about ${doc.name}…` : 'Upload a document first…'}
             disabled={!doc || isAsking}
