@@ -33,15 +33,32 @@ export default function ChatPanel({ doc, messages, onSend, onRetry, isAsking }) 
       <div className="messages-area">
         {!doc ? (
           <div className="empty-state">
-            <div className="empty-emoji">💬</div>
-            <h3>No document loaded</h3>
-            <p>Upload a PDF or CSV on the left to start chatting</p>
+            <div className="empty-icon-tile" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 18h6" />
+                <path d="M4 6h16v9a3 3 0 0 1-3 3H7l-3 3V6z" />
+              </svg>
+            </div>
+            <h3 className="empty-title">No document loaded</h3>
+            <p className="empty-subtitle">Upload a source to start asking questions.</p>
+            <div className="step-pills">
+              <span className="step-pill"><span>1.</span><span>Upload</span></span>
+              <span className="step-arrow">&rarr;</span>
+              <span className="step-pill"><span>2.</span><span>Process</span></span>
+              <span className="step-arrow">&rarr;</span>
+              <span className="step-pill"><span>3.</span><span>Chat</span></span>
+            </div>
           </div>
         ) : messages.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-emoji">🔍</div>
-            <h3>Ready to answer</h3>
-            <p>Ask anything about <strong>{doc.name}</strong></p>
+            <div className="empty-icon-tile" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="6" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+            </div>
+            <h3 className="empty-title">Ready to answer</h3>
+            <p className="empty-subtitle">Ask anything about <strong>{doc.name}</strong></p>
             <div className="suggestions">
               {SUGGESTIONS.map((s) => (
                 <button key={s} className="suggestion-btn" onClick={() => onSend(s)}>
@@ -76,12 +93,18 @@ export default function ChatPanel({ doc, messages, onSend, onRetry, isAsking }) 
       {/* ── Input area ── */}
       <div className="input-area">
         <div className={`input-wrapper ${!doc ? 'locked' : ''}`}>
+          <div className="input-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="6" />
+              <path d="M20 20l-3.5-3.5" />
+            </svg>
+          </div>
           <textarea
             className="chat-textarea"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={doc ? `Ask about ${doc.name}…` : 'Upload a document first'}
+            placeholder={doc ? `Ask about ${doc.name}…` : 'Upload a document first…'}
             disabled={!doc || isAsking}
             rows={1}
           />

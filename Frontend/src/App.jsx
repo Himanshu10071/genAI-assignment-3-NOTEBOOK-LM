@@ -82,19 +82,16 @@ export default function App() {
     <div className="app">
       <header className="header">
         <div className="header-left">
-          <svg className="logo-svg" viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="8" fill="url(#lg)" />
-            <path d="M9 10h14M9 16h10M9 22h12" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
-            <defs>
-              <linearGradient id="lg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#7c5cfc"/>
-                <stop offset="1" stopColor="#4f46e5"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <span className="logo-text">NOTEBOOK LM</span>
+          <div className="logo-tile" aria-hidden="true">
+            <svg className="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 4.5h9a3 3 0 0 1 3 3v11a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v-12a2 2 0 0 1 2-2z" />
+              <path d="M8 8.5h7" />
+              <path d="M8 12h7" />
+            </svg>
+          </div>
+          <span className="logo-text">Notebook LM</span>
         </div>
-        <p className="header-tag">RAG-powered document Q&amp;A</p>
+        <div className="header-badge">RAG-powered Q&amp;A</div>
       </header>
 
       <main className="main">
