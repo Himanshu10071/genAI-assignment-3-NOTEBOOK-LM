@@ -7,7 +7,7 @@ const SUGGESTIONS = [
   'Explain the main concepts',
 ]
 
-export default function ChatPanel({ doc, messages, onSend, isAsking }) {
+export default function ChatPanel({ doc, messages, onSend, onRetry, isAsking }) {
   const [input, setInput] = useState('')
   const bottomRef = useRef(null)
 
@@ -53,7 +53,12 @@ export default function ChatPanel({ doc, messages, onSend, isAsking }) {
         ) : (
           <>
             {messages.map((msg, i) => (
-              <MessageBubble key={i} message={msg} />
+              <MessageBubble
+                key={msg.id || i}
+                message={msg}
+                onRetry={onRetry}
+                isAsking={isAsking}
+              />
             ))}
             {isAsking && (
               <div className="thinking">

@@ -440,6 +440,34 @@ body {
   color: var(--error);
 }
 
+.retry-row {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.retry-btn {
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,107,107,0.45);
+  background: rgba(255,107,107,0.12);
+  color: var(--error);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.retry-btn:hover {
+  background: rgba(255,107,107,0.2);
+}
+
+.retry-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Markdown inside bubble */
 .ai-bubble .bubble-text p { margin-bottom: 0.5em; }
 .ai-bubble .bubble-text p:last-child { margin-bottom: 0; }

@@ -4,7 +4,7 @@ import { generateAnswer } from "../services/llmService.js";
 
 export async function  askQuestion(req,res) {
     try {
-    const { question, collectionName } = req.body;
+    const { question, collectionName, model } = req.body;
     if (!question || typeof question !== "string") {
       return res.status(400).json({
         success: false,
@@ -26,7 +26,7 @@ export async function  askQuestion(req,res) {
       // Continue without chunks (for greetings/general talk)
     }
 
-    const answer = await generateAnswer(question, chunks);
+    const answer = await generateAnswer(question, chunks, model);
     console.log(`[Chat] Answer generated successfully`);
 
     res.status(200).json({

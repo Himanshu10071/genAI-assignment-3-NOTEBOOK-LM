@@ -22,7 +22,14 @@ export function getOpenRouterClient() {
   return openrouter;
 }
 
-export function getOpenRouterModel() {
+export function getOpenRouterModel(requestedModel) {
+  if (requestedModel && typeof requestedModel === "string") {
+    const trimmed = requestedModel.trim();
+    if (trimmed) {
+      return trimmed;
+    }
+  }
+
   if (!process.env.MODEL) {
     throw new Error("MODEL is required");
   }

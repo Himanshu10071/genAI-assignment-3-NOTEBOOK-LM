@@ -1,7 +1,7 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
-export default function MessageBubble({ message }) {
+export default function MessageBubble({ message, onRetry, isAsking }) {
   const isUser = message.role === 'user'
 
   return (
@@ -25,6 +25,18 @@ export default function MessageBubble({ message }) {
                   : `Chunk ${i + 1}`}
               </span>
             ))}
+          </div>
+        )}
+        {!isUser && message.isError && message.retryQuestion && onRetry && (
+          <div className="retry-row">
+            <button
+              className="retry-btn"
+              type="button"
+              onClick={() => onRetry(message.id, message.retryQuestion)}
+              disabled={isAsking || message.isRetrying}
+            >
+              {message.isRetrying ? 'Retrying...' : 'Try again'}
+            </button>
           </div>
         )}
       </div>

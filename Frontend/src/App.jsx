@@ -16,13 +16,63 @@ export default function App() {
 
   const handleSend = async (question) => {
     if (!doc || isAsking) return
-    setMessages(prev => [...prev, { role: 'user', content: question }])
+    const userId = `${Date.now()}_user`
+    setMessages(prev => [...prev, { id: userId, role: 'user', content: question }])
     setIsAsking(true)
     try {
       const res = await askQuestion(question, doc.collectionName)
-      setMessages(prev => [...prev, { role: 'assistant', content: res.answer, sources: res.source }])
+      const botId = `${Date.now()}_assistant`
+      setMessages(prev => [...prev, { id: botId, role: 'assistant', content: res.answer, sources: res.source }])
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: `⚠️ ${err.message}`, isError: true }])
+      const errorId = `${Date.now()}_error`
+      setMessages(prev => [...prev, {
+        id: errorId,
+        role: 'assistant',
+        content: `⚠️ ${err.message}`,
+        isError: true,
+        retryQuestion: question,
+        sources: [],
+      }])
+    } finally {
+      setIsAsking(false)
+    }
+  }
+
+  const handleRetry = async (messageId, question) => {
+    if (!doc || isAsking || !question) return
+    setIsAsking(true)
+    setMessages(prev => prev.map((msg) => (
+      msg.id === messageId
+        ? { ...msg, content: 'Retrying...', isError: false, isRetrying: true, sources: [] }
+        : msg
+    )))
+    try {
+      const res = await askQuestion(question, doc.collectionName)
+      setMessages(prev => prev.map((msg) => (
+        msg.id === messageId
+          ? {
+            ...msg,
+            content: res.answer,
+            sources: res.source,
+            isError: false,
+            isRetrying: false,
+            retryQuestion: undefined,
+          }
+          : msg
+      )))
+    } catch (err) {
+      setMessages(prev => prev.map((msg) => (
+        msg.id === messageId
+          ? {
+            ...msg,
+            content: `⚠️ ${err.message}`,
+            isError: true,
+            isRetrying: false,
+            retryQuestion: question,
+            sources: [],
+          }
+          : msg
+      )))
     } finally {
       setIsAsking(false)
     }
@@ -59,6 +109,7 @@ export default function App() {
           doc={doc}
           messages={messages}
           onSend={handleSend}
+          onRetry={handleRetry}
           isAsking={isAsking}
         />
       </main>

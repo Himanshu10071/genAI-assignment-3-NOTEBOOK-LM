@@ -1,8 +1,8 @@
 import { getOpenRouterClient, getOpenRouterModel } from "../config/llm.js";
 
-export async function generateAnswer(question, chunks) {
+export async function generateAnswer(question, chunks, requestedModel) {
   const openrouter = getOpenRouterClient();
-  const model = getOpenRouterModel();
+  const model = getOpenRouterModel(requestedModel);
   
   const context = chunks && chunks.length > 0 
     ? chunks.map((chunk) => chunk.pageContent).join("\n\n")
